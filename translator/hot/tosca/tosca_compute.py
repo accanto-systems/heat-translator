@@ -12,7 +12,6 @@
 # under the License.
 
 import logging
-
 from toscaparser.utils.gettextutils import _
 from translator.common import flavors as nova_flavors
 from translator.common import images as glance_images
@@ -64,8 +63,6 @@ class ToscaCompute(HotResource):
         tosca_props = self.get_tosca_props()
         for key, value in tosca_props.items():
             if key in self.ALLOWED_NOVA_SERVER_PROPS:
-                if key == 'user_data':
-                    value = '|\n{0}'.format(value)
                 self.properties[key] = value
 
     # To be reorganized later based on new development in Glance and Graffiti
