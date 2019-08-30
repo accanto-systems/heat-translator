@@ -66,7 +66,6 @@ def _generate_type_map():
         types_map = {clazz.toscatype: clazz for clazz in classes}
     except AttributeError as e:
         raise ToscaClassAttributeError(message=e.message)
-
     return types_map
 
 
@@ -90,8 +89,7 @@ def _load_classes(locations, classes):
             # here until the dependent code is fixed to use the map.
             if f == 'tosca_block_storage_attachment.py':
                 continue
-
-            mod_name = cls_path + '/' + f.strip('.py')
+            mod_name = cls_path + '/' + f.replace('.py', '')
             mod_name = mod_name.replace('/', '.')
             try:
                 mod = importlib.import_module(mod_name)
@@ -383,12 +381,15 @@ class TranslateNodeTemplates(object):
         # at this point, all the HOT resources should have been created
         # in the graph.
         for resource in self.hot_resources:
+            for prop_name, prop_value in resource.properties.items():
+                translated_value = self.translate_param_value(prop_value, resource)
+                resource.properties[prop_name] = translated_value
             # traverse the reference chain to get the actual value
             inputs = resource.properties.get('input_values')
             if inputs:
                 for name, value in inputs.items():
                     inputs[name] = self.translate_param_value(value, resource)
-
+            
         # remove resources without type defined
         # for example a SoftwareComponent without interfaces
         # would fall in this case
@@ -500,7 +501,13 @@ class TranslateNodeTemplates(object):
         if concat_list is not None:
             res = self._translate_concat_function(concat_list, resource)
             if res:
-                return res
+                return resource
+
+        if isinstance(param_value, dict):
+            translated_dict = {}
+            for key, value in param_value.items():
+                translated_dict[key] = self.translate_param_value(value, resource)
+            return translated_dict
 
         if isinstance(param_value, list):
             translated_list = []
