@@ -513,10 +513,10 @@ class TranslateNodeTemplates(object):
             translated_list = []
             for elem in param_value:
                 translated_elem = self.translate_param_value(elem, resource)
-                if translated_elem:
+                if translated_elem != None:
                     translated_list.append(translated_elem)
             return translated_list
-
+        
         if isinstance(param_value, BASE_TYPES):
             return param_value
 
