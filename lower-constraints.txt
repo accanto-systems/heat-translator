@@ -14,9 +14,7 @@ docutils==0.11
 dogpile.cache==0.6.2
 extras==1.0.0
 fixtures==3.0.0
-flake8==2.5.5
-hacking==0.12.0
-idna==2.6
+idna==2.5
 imagesize==0.7.1
 iso8601==0.1.11
 Jinja2==2.10
@@ -27,7 +25,6 @@ jsonschema==2.6.0
 keystoneauth1==3.4.0
 linecache2==1.0.0
 MarkupSafe==1.0
-mccabe==0.2.1
 mock==2.0.0
 monotonic==0.6
 mox3==0.20.0
@@ -35,7 +32,7 @@ msgpack-python==0.4.0
 munch==2.1.0
 netaddr==0.7.18
 netifaces==0.10.4
-openstackdocstheme==1.18.1
+openstackdocstheme==1.20.0
 openstacksdk==0.11.2
 os-client-config==1.28.0
 os-service-types==1.2.0
@@ -47,10 +44,8 @@ oslo.utils==3.33.0
 oslosphinx==4.7.0
 oslotest==3.2.0
 pbr==2.0.0
-pep8==1.5.7
 prettytable==0.7.2
 pycparser==2.18
-pyflakes==0.8.1
 Pygments==2.2.0
 pyOpenSSL==17.1.0
 pyparsing==2.1.0
@@ -64,7 +59,7 @@ python-subunit==1.0.0
 python-swiftclient==3.2.0
 pytz==2013.6
 PyYAML==3.12
-requests==2.14.2
+requests==2.18.0
 requestsexceptions==1.2.0
 simplejson==3.5.1
 six==1.10.0
@@ -75,7 +70,7 @@ stevedore==1.20.0
 testrepository==0.0.18
 testscenarios==0.4
 testtools==2.2.0
-tosca-parser==1.4.0
+tosca-parser==1.6.1
 traceback2==1.4.0
 unittest2==1.1.0
 warlock==1.2.0
