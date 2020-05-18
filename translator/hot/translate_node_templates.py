@@ -52,7 +52,8 @@ def _generate_type_map():
     '''
 
     # Base types directory
-    BASE_PATH = 'translator/hot/tosca'
+    BASE_PATHS = ('translator/hot/tosca',
+                  'translator/hot/tosca/etsi_nfv')
 
     # Custom types directory defined in conf file
     custom_path = translatorConfig.get_value('DEFAULT',
@@ -61,7 +62,7 @@ def _generate_type_map():
     # First need to load the parent module, for example 'contrib.hot',
     # for all of the dynamically loaded classes.
     classes = []
-    _load_classes((BASE_PATH, custom_path), classes)
+    _load_classes(BASE_PATHS + (custom_path,), classes)
     try:
         types_map = {clazz.toscatype: clazz for clazz in classes}
     except AttributeError as e:
@@ -89,7 +90,8 @@ def _load_classes(locations, classes):
             # here until the dependent code is fixed to use the map.
             if f == 'tosca_block_storage_attachment.py':
                 continue
-            mod_name = cls_path + '/' + f.replace('.py', '')
+
+            mod_name = cls_path + '/' + os.path.splitext(f)[0]
             mod_name = mod_name.replace('/', '.')
             try:
                 mod = importlib.import_module(mod_name)
@@ -106,6 +108,7 @@ def _load_classes(locations, classes):
                     # TARGET_CLASS_NAME is not defined in module.
                     # Re-raise the exception
                     raise
+
 
 ##################
 # Module constants
@@ -138,8 +141,17 @@ TOSCA_TO_HOT_TYPE = _generate_type_map()
 
 BASE_TYPES = six.string_types + six.integer_types + (dict, OrderedDict)
 
+BASE_POLICY_TYPES = [
+    'tosca.policies.Scaling',
+    'tosca.policies.Monitoring',
+    'tosca.policies.Placement',
+    'tosca.policies.Reservation',
+]
+
 HOT_SCALING_POLICY_TYPE = ["OS::Heat::AutoScalingGroup",
                            "OS::Senlin::Profile"]
+
+TOSCA_SA = 'tosca.policies.nfv.ScalingAspects'
 
 
 class TranslateNodeTemplates(object):
@@ -185,7 +197,8 @@ class TranslateNodeTemplates(object):
                 resource.handle_properties(self.hot_resources)
             extra_hot_resources = []
             for res in self.hot_resources:
-                if res.type == 'OS::Heat::ScalingPolicy':
+                if res.type == 'OS::Heat::ScalingPolicy' and\
+                        res.toscatype != TOSCA_SA:
                     extra_res = copy.deepcopy(res)
                     scaling_adjustment = res.properties['scaling_adjustment']
                     if scaling_adjustment < 0:
@@ -215,9 +228,7 @@ class TranslateNodeTemplates(object):
         suffix = 0
         # Copy the TOSCA graph: nodetemplate
         for node in self.nodetemplates:
-            base_type = HotResource.get_base_type_str(node.type_definition)
-            if base_type not in TOSCA_TO_HOT_TYPE:
-                raise UnsupportedTypeError(type=_('%s') % base_type)
+            base_type = self._get_supported_type(node)
             hot_node = TOSCA_TO_HOT_TYPE[base_type](node,
                                                     csar_dir=self.csar_dir)
             self.hot_resources.append(hot_node)
@@ -264,30 +275,26 @@ class TranslateNodeTemplates(object):
 
         for policy in self.policies:
             policy_type = policy.type_definition
-            if policy.is_derived_from('tosca.policies.Scaling') and \
-               policy_type.type != 'tosca.policies.Scaling.Cluster':
-                TOSCA_TO_HOT_TYPE[policy_type.type] = \
-                    TOSCA_TO_HOT_TYPE['tosca.policies.Scaling']
-            if policy.is_derived_from('tosca.policies.Monitoring'):
-                TOSCA_TO_HOT_TYPE[policy_type.type] = \
-                    TOSCA_TO_HOT_TYPE['tosca.policies.Monitoring']
-            if policy.is_derived_from('tosca.policies.Placement'):
-                TOSCA_TO_HOT_TYPE[policy_type.type] = \
-                    TOSCA_TO_HOT_TYPE['tosca.policies.Placement']
-            if policy.is_derived_from('tosca.policies.Reservation'):
-                TOSCA_TO_HOT_TYPE[policy_type.type] = \
-                    TOSCA_TO_HOT_TYPE['tosca.policies.Reservation']
-            if policy_type.type not in TOSCA_TO_HOT_TYPE:
-                raise UnsupportedTypeError(type=_('%s') % policy_type.type)
-            elif policy_type.type == 'tosca.policies.Scaling.Cluster':
+            own_policy_type = policy_type.type
+            base_policy_type = self._get_supported_type(policy)
+
+            if base_policy_type in BASE_POLICY_TYPES and \
+                    own_policy_type != 'tosca.policies.Scaling.Cluster':
+                TOSCA_TO_HOT_TYPE[own_policy_type] = \
+                    TOSCA_TO_HOT_TYPE[base_policy_type]
+
+            if own_policy_type == 'tosca.policies.Scaling.Cluster':
                 self.hot_template_version = '2016-04-08'
-            if policy.is_derived_from('tosca.policies.Scaling') and \
-               policy_type.type != 'tosca.policies.Scaling.Cluster':
-                policy_node = TOSCA_TO_HOT_TYPE[policy_type.type](
+
+            if (base_policy_type == 'tosca.policies.Scaling' or
+                    base_policy_type == 'tosca.policies.tacker.Scaling') and \
+                    own_policy_type != 'tosca.policies.Scaling.Cluster':
+                policy_node = TOSCA_TO_HOT_TYPE[own_policy_type](
                     policy,
                     hot_template_parameters=self.hot_template.parameters)
             else:
-                policy_node = TOSCA_TO_HOT_TYPE[policy_type.type](policy)
+                policy_node = TOSCA_TO_HOT_TYPE[own_policy_type](policy)
+
             self.hot_resources.append(policy_node)
 
         # Handle life cycle operations: this may expand each node
@@ -407,6 +414,17 @@ class TranslateNodeTemplates(object):
                     resource.depends_on.remove(removed_resource)
 
         return self.hot_resources
+
+    def _get_supported_type(self, original_node):
+        # trace parent types until finding a supported type
+        node = original_node
+        node_type = original_node.type
+        while node_type not in TOSCA_TO_HOT_TYPE:
+            node = node.parent_type
+            if node is None:
+                raise UnsupportedTypeError(type=_('%s') % original_node.type)
+            node_type = node.type
+        return node_type
 
     def translate_param_value(self, param_value, resource):
         tosca_template = None

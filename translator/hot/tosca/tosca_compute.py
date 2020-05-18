@@ -225,8 +225,8 @@ class ToscaCompute(HotResource):
         # multiple private/public IP addresses.
         log.debug(_('Converting TOSCA attribute for a nodetemplate to a HOT \
                   attriute.'))
-        if attribute == 'private_address' or \
-           attribute == 'public_address':
+        if (attribute == 'private_address' or
+                attribute == 'public_address'):
             attr['get_attr'] = [self.name, 'networks', 'private', 0]
 
         return attr
