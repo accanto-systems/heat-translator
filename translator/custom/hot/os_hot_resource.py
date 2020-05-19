@@ -3,6 +3,7 @@ from translator.hot.syntax.hot_resource import HotResource
 
 
 class OSHotResource(HotResource):
+    """ Base type to support one-to-one mappings from Tosca types to a Heat type (by default, it will accept all properties and attributes included on the Tosca node) """
 
     def __init__(self, hot_type, nodetemplate, csar_dir=None):
         super(OSHotResource, self).__init__(nodetemplate,
