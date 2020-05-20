@@ -519,8 +519,7 @@ class TranslateNodeTemplates(object):
         if concat_list is not None:
             res = self._translate_concat_function(concat_list, resource)
             if res:
-                return resource
-
+                return res
         if isinstance(param_value, dict):
             translated_dict = {}
             for key, value in param_value.items():
