@@ -7,9 +7,9 @@ CUSTOM_PROPS = ['admin_state_up', 'dhcp_agent_ids', 'dns_domain', 'port_security
                     'shared', 'tags', 'tenant_id', 'value_specs']
 
 class OSNfvVnfVirtualLink(HotResource):
-    """Translate TOSCA node type os.nodes.nfv.VnfVirtualLink, an extension to tosca.nodes.nfv.VnfVirtualLink"""
+    """Translate TOSCA node type tosca.nodes.nfv.VnfVirtualLink.NeutronNetwork, an extension to tosca.nodes.nfv.VnfVirtualLink"""
 
-    toscatype = 'os.nodes.nfv.VnfVirtualLink'
+    toscatype = 'tosca.nodes.nfv.VnfVirtualLink.NeutronNetwork'
 
     def __init__(self, nodetemplate, csar_dir=None):
         # Check if it refers to an existing Network by name

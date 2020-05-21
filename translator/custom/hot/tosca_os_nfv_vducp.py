@@ -7,9 +7,9 @@ CUSTOM_PROPS = ['admin_state_up', 'allowed_address_pairs', 'device_id', 'device_
 
 
 class OSNfvVducp(ToscaNfvVducp):
-    """Translate TOSCA node type os.nodes.nfv.VduCp, an extension to tosca.nodes.nfv.VduCp"""
+    """Translate TOSCA node type tosca.nodes.nfv.VduCp.NeutronPort, an extension to tosca.nodes.nfv.VduCp"""
 
-    toscatype = 'os.nodes.nfv.VduCp'
+    toscatype = 'tosca.nodes.nfv.VduCp.NeutronPort'
 
     def __is_custom_prop(self, prop_name):
         return prop_name in CUSTOM_PROPS

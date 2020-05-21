@@ -7,9 +7,9 @@ CUSTOM_PROPS = ['admin_pass', 'availability_zone', 'config_drive', 'diskConfig',
                         'user_data', 'user_data_format', 'user_data_update_policy']
 
 class OSNfvVduCompute(ToscaNfvVduCompute):
-    """Translate TOSCA node type os.nodes.nfv.Vdu.Compute, an extension to tosca.nodes.nfv.Vdu.Compute"""
+    """Translate TOSCA node type tosca.nodes.nfv.Vdu.Compute.NovaServer, an extension to tosca.nodes.nfv.Vdu.Compute"""
 
-    toscatype = 'os.nodes.nfv.Vdu.Compute'
+    toscatype = 'tosca.nodes.nfv.Vdu.Compute.NovaServer'
 
     def __init__(self, nodetemplate, csar_dir=None):
         super(OSNfvVduCompute, self).__init__(nodetemplate, csar_dir=csar_dir)

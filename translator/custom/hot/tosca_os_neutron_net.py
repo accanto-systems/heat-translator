@@ -4,9 +4,9 @@ TARGET_CLASS_NAME = 'OSNeutronNet'
 HOT_TYPE = 'OS::Neutron::Net'
 
 class OSNeutronNet(OSHotResource):
-    '''Translate TOSCA node type os.nodes.neutron.Net'''
+    '''Translate TOSCA node type tosca.nodes.network.NeutronNetwork'''
 
-    toscatype = 'os.nodes.neutron.Net'
+    toscatype = 'tosca.nodes.network.NeutronNetwork'
 
     def __init__(self, nodetemplate, csar_dir=None):
         super(OSNeutronNet, self).__init__(HOT_TYPE, nodetemplate, csar_dir=csar_dir)

@@ -13,7 +13,7 @@ class ToscaExtFloatingIp(ToscaFloatingIP):
             # Check for attach relation. If found add a property for the attached network
             if rel.is_derived_from(LINKED_NETWORK_REL):
                 attached_node = node
-                if attached_node.type == 'tosca.nodes.network.Network' or attached_node.type == 'os.nodes.neutron.Net':
+                if attached_node.type == 'tosca.nodes.network.Network' or attached_node.type == 'tosca.nodes.network.NeutronNetwork':
                     network_resource = None
                     for hot_resource in self.depends_on_nodes:
                         if attached_node.name == hot_resource.name:

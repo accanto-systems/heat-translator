@@ -6,9 +6,9 @@ HOT_TYPE = 'OS::Neutron::Subnet'
 LINKED_NETWORK_REL = 'tosca.relationships.network.LinksTo'
 
 class OSNeutronSubnet(OSHotResource):
-    '''Translate TOSCA node type os.nodes.neutron.Subnet'''
+    '''Translate TOSCA node type tosca.nodes.network.NeutronSubnet'''
 
-    toscatype = 'os.nodes.neutron.Subnet'
+    toscatype = 'tosca.nodes.network.NeutronSubnet'
 
     def __init__(self, nodetemplate, csar_dir=None):
         super(OSNeutronSubnet, self).__init__(HOT_TYPE, nodetemplate, csar_dir=csar_dir)

@@ -4,9 +4,9 @@ TARGET_CLASS_NAME = 'OSNeutronRouter'
 HOT_TYPE = 'OS::Neutron::Router'
 
 class OSNeutronRouter(OSHotResource):
-    '''Translate TOSCA node type os.nodes.neutron.Router'''
+    '''Translate TOSCA node type tosca.nodes.network.NeutronRouter'''
 
-    toscatype = 'os.nodes.neutron.Router'
+    toscatype = 'tosca.nodes.network.NeutronRouter'
 
     def __init__(self, nodetemplate, csar_dir=None):
         super(OSNeutronRouter, self).__init__(HOT_TYPE, nodetemplate, csar_dir=csar_dir)
