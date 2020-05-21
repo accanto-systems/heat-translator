@@ -18,7 +18,7 @@ import os
 from translator.conf.config import ConfigProvider
 
 CONF_FILENAME = 'translator.conf'
-
+CONF_ENV_VAR = 'TRANSLATOR_CONF'
 
 def init_global_conf():
     '''Initialize the configuration provider.
@@ -28,8 +28,12 @@ def init_global_conf():
     is a standard ini format, and is prcessed using the ConfigParser module.
 
     '''
-    conf_path = os.path.dirname(os.path.abspath(__file__))
-    conf_file = os.path.join(conf_path, CONF_FILENAME)
+    env_var_value = os.environ.get(CONF_ENV_VAR)
+    if env_var_value != None:
+        conf_file = env_var_value
+    else:
+        conf_path = os.path.dirname(os.path.abspath(__file__))
+        conf_file = os.path.join(conf_path, CONF_FILENAME)
     ConfigProvider._load_config(conf_file)
 
 
