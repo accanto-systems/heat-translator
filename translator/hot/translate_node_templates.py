@@ -78,6 +78,10 @@ def _load_classes(locations, classes):
         if cls_path.startswith('translator/'):
             abs_path = os.path.dirname(os.path.abspath(__file__))
             abs_path = abs_path.replace('translator/hot', cls_path)
+        elif ',' in cls_path:
+            split = cls_path.split(',')
+            abs_path = split[1]
+            cls_path = split[0]
         else:
             abs_path = cls_path
 
